@@ -21,6 +21,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -57,19 +58,27 @@ class GameFragment : Fragment() {
 
         binding.correctButton.setOnClickListener {
             viewModel.onCorrect()
-            updateWordText()
         }
         binding.skipButton.setOnClickListener {
             viewModel.onSkip()
-            updateWordText()
 
         }
 
         viewModel.score.observe(this, Observer {newScore->
             binding.scoreText.text = newScore.toString()
+        })
+        viewModel.word.observe(this, Observer {newWord->
+            binding.wordText.text = newWord
+        })
+
+        viewModel.eventGameFinished.observe(this, Observer {hasFinished->
+            if (hasFinished) {
+                gameFinished()
+                viewModel.onGameFinishedComplete()
+            }
 
         })
-        updateWordText()
+
         return binding.root
 
     }
@@ -97,9 +106,5 @@ class GameFragment : Fragment() {
 
     /** Methods for updating the UI **/
 
-    private fun updateWordText() {
-        binding.wordText.text = viewModel.word
-
-    }
 
 }
